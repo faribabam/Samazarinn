@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Samazarinn Luxury Jewelry | طلا و جواهرات سمازرین</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        :root {
+            --primary-gold: #d4af37;
+            --dark-bg: #070707;
+            --card-bg: #121212;
+            --text-color: #ffffff;
+            --border-color: #262626;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        /* هدر اصلی */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 5%;
+            background: rgba(7, 7, 7, 0.9);
+            border-bottom: 1px solid var(--border-color);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: bold;
+            color: var(--primary-gold);
+            letter-spacing: 2px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .btn-action {
+            background: transparent;
+            border: 1px solid var(--primary-gold);
+            color: var(--primary-gold);
+            padding: 8px 18px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .btn-action:hover {
+            background: var(--primary-gold);
+            color: var(--dark-bg);
+        }
+
+        /* ساختار سکشن اصلی و ویترین سه‌بعدی */
+        .hero {
+            display: flex;
+            flex: 1;
+            padding: 140px 5% 40px 5%;
+            align-items: center;
+            justify-content: space-between;
+            gap: 40px;
+        }
+
+        .hero-info {
+            flex: 1;
+            max-width: 550px;
+        }
+
+        .hero-info h1 {
+            font-size: 3.2rem;
+            color: var(--primary-gold);
+            margin-bottom: 20px;
+            line-height: 1.3;
+        }
+
+        .hero-info p {
+            font-size: 1.1rem;
+            color: #b3b3b3;
+            margin-bottom: 30px;
+            line-height: 1.8;
+        }
+
+        .price-display {
+            font-size: 1.8rem;
+            color: #fff;
+            margin-bottom: 25px;
+            font-weight: bold;
+            display: block;
+        }
+
+        /* کانتینر رندرر سه‌بعدی Three.js */
+        .canvas-container {
+            flex: 1;
+            height: 500px;
+            position: relative;
+            background: radial-gradient(circle, #1a1a1a 0%, #070707 80%);
+            border-radius: 15px;
+            border: 1px solid var(--border-color);
+            cursor: grab;
+        }
+
+        .canvas-container:active {
+            cursor: grabbing;
+        }
+
+        canvas {
+            width: 100% !important;
+            height: 100% !important;
+            display: block;
+            border-radius: 15px;
+        }
+
+        /* فوتر اختصاصی توسعه‌دهنده */
+        footer {
+            text-align: center;
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+            background: #050505;
+            font-size: 0.9rem;
+            color: #777;
+            letter-spacing: 1px;
+            z-index: 10;
+        }
+
+        footer a {
+            color: var(--primary-gold);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        /* پنل مدیریت زنده بدون کد نویسی (No-Code Admin Floating Panel) */
+        .admin-toggle {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            z-index: 1000;
+            background: var(--primary-gold);
+            border: none;
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(212,175,55,0.4);
+            font-size: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .admin-panel {
+            position: fixed;
+            top: 0;
+            left: -420px;
+            width: 400px;
+            height: 100vh;
+            background: #111111;
+            border-right: 1px solid var(--primary-gold);
+            z-index: 999;
+            box-shadow: 5px 0 25px rgba(0,0,0,0.8);
+            padding: 30px 20px;
+            overflow-y: auto;
+            transition: left 0.4s cubic-bezier(0.05, 0.74, 0.2, 1);
+        }
+
+        .admin-panel.open {
+            left: 0;
+        }
+
+        .admin-panel h2 {
+            color: var(--primary-gold);
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            font-size: 1.4rem;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: #aaa;
+            margin-bottom: 6px;
+        }
+
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            background: #1c1c1c;
+            border: 1px solid var(--border-color);
+            color: #fff;
+            padding: 10px;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        .form-group input:focus, .form-group textarea:focus {
+            border-color: var(--primary-gold);
+        }
+
+        .save-btn {
+            background: var(--primary-gold);
+            color: #000;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+
+        /* دکمه‌های شناور شبکه‌های اجتماعی */
+        .social-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 1000;
+        }
+
+        .social-link {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.85rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        .tg-link { background: #0088cc; }
+        .ig-link { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+
+        /* پوزیشن‌دهی واکنش‌گرا و بین‌المللی */
+        body[dir="ltr"] .admin-toggle { left: auto; right: 30px; }
+        body[dir="ltr"] .social-container { right: auto; left: 30px; }
+        body[dir="ltr"] .admin-panel { left: auto; right: -420px; border-right: none; border-left: 1px solid var(--primary-gold); }
+        body[dir="ltr"] .admin-panel.open { right: 0; left: auto; }
+
+        @media (max-width: 968px) {
+            .hero {
+                flex-direction: column-reverse;
+                text-align: center;
+                padding-top: 140px;
+            }
+            .canvas-container {
+                width: 100%;
+                height: 350px;
+            }
+            .hero-info h1 {
+                font-size: 2.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo" id="site-logo">Samazarinn</div>
+        <div class="nav-buttons">
+            <button class="btn-action" id="lang-btn" onclick="switchLanguage()">EN</button>
+        </div>
+    </header>
+
+    <main class="hero">
+        <div class="hero-info">
+            <h1 id="main-title">طلا و جواهرات سمازرین</h1>
+            <p id="main-desc">تجربه‌ای تعاملی و بی‌نظیر از جواهرات لوکس با برترین کیفیت طراحی ارگانیک صنعتی.</p>
+            <div class="price-display" id="main-price">۰ تومان</div>
+            <a href="#" class="btn-action" id="action-link" style="padding: 15px 35px; font-size:1.1rem; border-radius:30px; display:inline-block; text-decoration:none;">خرید آنلاین</a>
+        </div>
+
+        <div class="canvas-container" id="three-canvas-holder"></div>
+    </main>
+
+    <button class="admin-toggle" onclick="toggleAdminPanel()">⚙️</button>
+
+    <div class="admin-panel" id="no-code-panel">
+        <h2>تنظیمات زنده سمازرین</h2>
+        <form id="admin-form" onsubmit="handleFormSave(event)">
+            <div class="form-group">
+                <label>تم رنگی اصلی (کد هگز یا نام رنگ)</label>
+                <input type="text" id="input-color" value="#d4af37">
+            </div>
+            
+            <h3 style="color:#d4af37; font-size:1rem; margin:15px 0 10px 0;">محتوای فارسی (FA)</h3>
+            <div class="form-group">
+                <label>عنوان اصلی</label>
+                <input type="text" id="input-title-fa">
+            </div>
+            <div class="form-group">
+                <label>توضیحات</label>
+                <textarea id="input-desc-fa" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+                <label>قیمت محصول</label>
+                <input type="text" id="input-price-fa">
+            </div>
+            <div class="form-group">
+                <label>متن دکمه اکشن</label>
+                <input type="text" id="input-btn-fa">
+            </div>
+            <div class="form-group">
+                <label>متن فوتر (کپی‌رایت)</label>
+                <input type="text" id="input-footer-fa">
+            </div>
+
+            <h3 style="color:#d4af37; font-size:1rem; margin:15px 0 10px 0;">محتوای انگلیسی (EN)</h3>
+            <div class="form-group">
+                <label>عنوان اصلی (EN)</label>
+                <input type="text" id="input-title-en">
+            </div>
+            <div class="form-group">
+                <label>توضیحات (EN)</label>
+                <textarea id="input-desc-en" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+                <label>قیمت محصول (EN)</label>
+                <input type="text" id="input-price-en">
+            </div>
+            <div class="form-group">
+                <label>متن دکمه اکشن (EN)</label>
+                <input type="text" id="input-btn-en">
+            </div>
+            <div class="form-group">
+                <label>متن فوتر (EN)</label>
+                <input type="text" id="input-footer-en">
+            </div>
+
+            <h3 style="color:#d4af37; font-size:1rem; margin:15px 0 10px 0;">تنظیمات هندسه سه‌بعدی طلا</h3>
+            <div class="form-group">
+                <label>نوع ساختار وکتور سه‌بعدی</label>
+                <select id="input-geometry">
+                    <option value="torus">Torus Knot (مدل حلقه در هم تنیده لوکس)</option>
+                    <option value="sphere">Icosahedron (نگین الماس تراش‌خورده)</option>
+                    <option value="box">Box (مکعب جواهرات کریستالی)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>سرعت انیمیشن و چرخش خودکار</label>
+                <input type="number" id="input-speed" step="0.1" value="1.0">
+            </div>
+
+            <h3 style="color:#d4af37; font-size:1rem; margin:15px 0 10px 0;">راه‌های ارتباطی پشتیبانی</h3>
+            <div class="form-group">
+                <label>لینک مستقیم تلگرام</label>
+                <input type="text" id="input-tg" value="https://t.me/">
+            </div>
+            <div class="form-group">
+                <label>لینک مستقیم اینستاگرام</label>
+                <input type="text" id="input-ig" value="https://instagram.com/">
+            </div>
+
+            <button type="submit" class="save-btn">ذخیره و اعمال تغییرات ساختاری</button>
+        </form>
+    </div>
+
+    <div class="social-container">
+        <a href="#" target="_blank" class="social-link ig-link" id="link-ig-href">IG</a>
+        <a href="#" target="_blank" class="social-link tg-link" id="link-tg-href">TG</a>
+    </div>
+
+    <footer id="site-footer">
+        </footer>
+
+    <script>
+        // دیتای ساختار اولیه و هسته ذخیره‌سازی وضعیت زنده سایت بدون کدنویسی
+        const defaultState = {
+            lang: 'fa',
+            themeColor: '#d4af37',
+            geometryType: 'torus',
+            animationSpeed: 1.0,
+            telegramUrl: 'https://t.me/samazarinn',
+            instagramUrl: 'https://instagram.com/samazarinn',
+            fa: {
+                title: 'کالکشن طلا و جواهرات سمازرین',
+                desc: 'طراحی‌های خاص، مدرن و منحصربه‌فرد برای کسانی که به درخشش و اصالت خود اهمیت می‌دهند. وکتور سه‌بعدی طلا را با ماوس بچرخانید و بررسی کنید.',
+                price: '۴۸,۹۰۰,۰۰۰ تومان',
+                btnText: 'خرید مستقیم کالا',
+                footerText: 'ساخته شده توسط fari_codewriter | تمامی حقوق محفوظ است.'
+            },
+            en: {
+                title: 'Samazarinn Fine Jewelry',
+                desc: 'Exclusive, modern, and handcrafted masterpiece designs for those who value brilliance. Drag and rotate the interactive 3D luxury model.',
+                price: '$820.00',
+                btnText: 'Purchase Collection',
+                footerText: 'Made by fari_codewriter | All Rights Reserved.'
+            }
+        };
+
+        // بارگذاری دیتای ذخیره شده از localStorage مرورگر یا لود دیتای پیش‌فرض فرضی اولیه
+        let state = JSON.parse(localStorage.getItem('samazarinn_state')) || defaultState;
+
+        // متغیرهای گلوبال موتور گرافیکی Three.js
+        let scene, camera, renderer, crystalMesh;
+        let isDragging = false;
+        let previousMousePosition = { x: 0, y: 0 };
+
+        // تابع آغازین راه‌اندازی فرانت‌اند و اتصال کدهای سه‌بعدی
+        function init() {
+            renderDynamicContent();
+            setupThreeJS();
+            populateAdminForm();
+            
+            // شنونده‌های رویداد موس برای جابه‌جایی تعاملی سه‌بعدی طلا با ماوس یا لمس
+            const holder = document.getElementById('three-canvas-holder');
+            holder.addEventListener('mousedown', () => isDragging = true);
+            window.addEventListener('mouseup', () => isDragging = false);
+            holder.addEventListener('mousemove', handle3DRotation);
+        }
+
+        // تزریق دیتای حالت (State) به المان‌های HTML صفحه بر اساس زبان انتخابی
+        function renderDynamicContent() {
+            const isFa = state.lang === 'fa';
+            document.documentElement.dir = isFa ? 'rtl' : 'ltr';
+            document.documentElement.lang = state.lang;
+            
+            document.getElementById('lang-btn').innerText = isFa ? 'EN' : 'FA';
+            
+            // اعمال متون بر اساس زبان فعال
+            const content = state[state.lang];
+            document.getElementById('main-title').innerText = content.title;
+            document.getElementById('main-desc').innerText = content.desc;
+            document.getElementById('main-price').innerText = content.price;
+            document.getElementById('action-link').innerText = content.btnText;
+            document.getElementById('site-footer').innerHTML = content.footerText;
+            
+            // لینک‌های دکمه‌های شبکه اجتماعی پشتیبانی
+            document.getElementById('link-tg-href').href = state.telegramUrl;
+            document.getElementById('link-ig-href').href = state.instagramUrl;
+
+            // اعمال تم رنگی پویا به خصوصیات ریشه CSS پروژه
+            document.documentElement.style.setProperty('--primary-gold', state.themeColor);
+        }
+
+        // سوییچ راحت بین دو زبان فارسی و انگلیسی
+        function switchLanguage() {
+            state.lang = state.lang === 'fa' ? 'en' : 'fa';
+            saveState();
+            renderDynamicContent();
+        }
+
+        // کنترل باز و بسته شدن سایدبار پنل مدیریت ادمین زنده
+        function toggleAdminPanel() {
+            document.getElementById('no-code-panel').classList.toggle('open');
+        }
+
+        // پر کردن فیلدهای فرم پنل ادمین هنگام لود برای سهولت ویرایش
+        function populateAdminForm() {
+            document.getElementById('input-color').value = state.themeColor;
+            document.getElementById('input-geometry').value = state.geometryType;
+            document.getElementById('input-speed').value = state.animationSpeed;
+            document.getElementById('input-tg').value = state.telegramUrl;
+            document.getElementById('input-ig').value = state.instagramUrl;
+
+            document.getElementById('input-title-fa').value = state.fa.title;
+            document.getElementById('input-desc-fa').value = state.fa.desc;
+            document.getElementById('input-price-fa').value = state.fa.price;
+            document.getElementById('input-btn-fa').value = state.fa.btnText;
+            document.getElementById('input-footer-fa').value = state.fa.footerText;
+
+            document.getElementById('input-title-en').value = state.en.title;
+            document.getElementById('input-desc-en').value = state.en.desc;
+            document.getElementById('input-price-en').value = state.en.price;
+            document.getElementById('input-btn-en').value = state.en.btnText;
+            document.getElementById('input-footer-en').value = state.en.footerText;
+        }
+
+        // پردازش فرآیند فیلدهای پر شده پنل ادمین و ذخیره سازی بدون کد در لوکال استوریج
+        function handleFormSave(e) {
+            e.preventDefault();
+            
+            state.themeColor = document.getElementById('input-color').value;
+            state.geometryType = document.getElementById('input-geometry').value;
+            state.animationSpeed = parseFloat(document.getElementById('input-speed').value);
+            state.telegramUrl = document.getElementById('input-tg').value;
+            state.instagramUrl = document.getElementById('input-ig').value;
+
+            state.fa.title = document.getElementById('input-title-fa').value;
+            state.fa.desc = document.getElementById('input-desc-fa').value;
+            state.fa.price = document.getElementById('input-price-fa').value;
+            state.fa.btnText = document.getElementById('input-btn-fa').value;
+            state.fa.footerText = document.getElementById('input-footer-fa').value;
+
+            state.en.title = document.getElementById('input-title-en').value;
+            state.en.desc = document.getElementById('input-desc-en').value;
+            state.en.price = document.getElementById('input-price-en').value;
+            state.en.btnText = document.getElementById('input-btn-en').value;
+            state.en.footerText = document.getElementById('input-footer-en').value;
+
+            saveState();
+            renderDynamicContent();
+            updateThreeGeometry(); // تغییر فوری شکل هندسی طلا در فضا بدون ریلود صفحه
+            toggleAdminPanel();
+        }
+
+        function saveState() {
+            localStorage.setItem('samazarinn_state', JSON.stringify(state));
+        }
+
+        /* بخش مهندسی موتور سه‌بعدی بومی بر پایه کتابخانه THREE.JS */
+        function setupThreeJS() {
+            const container = document.getElementById('three-canvas-holder');
+            
+            scene = new THREE.Scene();
+            
+            camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.z = 5;
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            container.appendChild(renderer.domElement);
+
+            // اضافه کردن سیستم نورپردازی استودیویی برای درخشش وکتور طلا
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+            scene.add(ambientLight);
+
+            const dirLight1 = new THREE.DirectionalLight(0xffe599, 1.2); // نور گرم طلایی شبیه‌ساز
+            dirLight1.position.set(5, 5, 5);
+            scene.add(dirLight1);
+
+            const dirLight2 = new THREE.DirectionalLight(0xffffff, 0.6);
+            dirLight2.position.set(-5, -5, 3);
+            scene.add(dirLight2);
+
+            buildMesh();
+            animate();
+
+            window.addEventListener('resize', onWindowResize);
+        }
+
+        // ساخت مش متریال دهی شده لوکس طلا بر اساس مدل هندسی انتخاب شده در پنل ادمین
+        function buildMesh() {
+            let geometry;
+            
+            if (state.geometryType === 'torus') {
+                geometry = new THREE.TorusKnotGeometry(0.8, 0.26, 150, 20);
+            } else if (state.geometryType === 'sphere') {
+                geometry = new THREE.IcosahedronGeometry(1.2, 0);
+            } else {
+                geometry = new THREE.BoxGeometry(1.2, 1.2, 1.2);
+            }
+
+            // متریال استاندارد فیزیکی PBR برای شبیه‌سازی واقع‌گرایانه طلا و بازتاب نور
+            const goldMaterial = new THREE.MeshStandardMaterial({
+                color: new THREE.Color(state.themeColor),
+                metalness: 0.9,
+                roughness: 0.15,
+                roughnessMap: null,
+                flatShading: state.geometryType === 'sphere' ? true : false
+            });
+
+            crystalMesh = new THREE.Mesh(geometry, goldMaterial);
+            scene.add(crystalMesh);
+        }
+
+        function updateThreeGeometry() {
+            if (crystalMesh) {
+                scene.remove(crystalMesh);
+                crystalMesh.geometry.dispose();
+                crystalMesh.material.dispose();
+            }
+            buildMesh();
+        }
+
+        // هندلر حرکت ماوس برای ایجاد انیمیشن تعاملی ۳۶۰ درجه جواهر با کشیدن موس
+        function handle3DRotation(e) {
+            const deltaMove = {
+                x: e.offsetX - previousMousePosition.x,
+                y: e.offsetY - previousMousePosition.y
+            };
+
+            if (isDragging && crystalMesh) {
+                crystalMesh.rotation.y += deltaMove.x * 0.007;
+                crystalMesh.rotation.x += deltaMove.y * 0.007;
+            }
+
+            previousMousePosition = {
+                x: e.offsetX,
+                y: e.offsetY
+            };
+        }
+
+        // حلقه انیمیشن رندر متوالی مرورگر (60 فریم بر ثانیه برای نرمی حرکت)
+        function animate() {
+            requestAnimationFrame(animate);
+
+            if (!isDragging && crystalMesh) {
+                // چرخش ریتمیک وکتور سه‌بعدی به صورت خودکار بر اساس گام سرعت تنظیم شده ادمین
+                crystalMesh.rotation.y += 0.01 * state.animationSpeed;
+                crystalMesh.rotation.x += 0.005 * state.animationSpeed;
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        // همگام ماندن ریسپانسیو رندر کانوای با تغییر سایز مرورگر یا چرخش موبایل
+        function onWindowResize() {
+            const container = document.getElementById('three-canvas-holder');
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        }
+
+        // اجرای آنی اسکریپت با لود شدن المان‌های درخت DOM کدهای صفحه
+        window.onload = init;
+    </script>
+</body>
+</html>
