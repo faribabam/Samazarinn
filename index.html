@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Samazarinn Jewelry | طلا و جواهرات سمازرین</title>
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+    <style>
+        :root {
+            --gold: #d4af37;
+            --dark: #0a0a0a;
+            --light: #fff;
+            --gray: #222;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--dark);
+            color: var(--light);
+            overflow-x: hidden;
+            transition: all 0.3s ease;
+        }
+
+        /* هدر سایت */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 5%;
+            border-bottom: 1px solid #1a1a1a;
+            background: rgba(10, 10, 10, 0.9);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--gold);
+            letter-spacing: 2px;
+        }
+
+        .nav-tools {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .lang-btn {
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 5px 12px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .lang-btn:hover {
+            background: var(--gold);
+            color: var(--dark);
+        }
+
+        /* بخش اصلی سایت (قهرمان داستان) */
+        .hero {
+            display: flex;
+            flex-direction: flex-row;
+            min-height: 100vh;
+            padding: 100px 5% 50px 5%;
+            align-items: center;
+            justify-content: space-between;
+            gap: 40px;
+        }
+
+        .hero-content {
+            flex: 1;
+        }
+
+        .hero-content h1 {
+            font-size: 3.5rem;
+            color: var(--gold);
+            margin-bottom: 20px;
+            line-height: 1.3;
+        }
+
+        .hero-content p {
+            font-size: 1.2rem;
+            color: #ccc;
+            margin-bottom: 30px;
+            line-height: 1.8;
+        }
+
+        .price-tag {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            display: block;
+            font-weight: bold;
+        }
+
+        .buy-btn {
+            background: linear-gradient(45deg, #d4af37, #aa7c11);
+            color: var(--dark);
+            padding: 15px 40px;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 50px;
+            display: inline-block;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .buy-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+        }
+
+        /* کانتینر نمایشگر سه‌بعدی */
+        .viewer-container {
+            flex: 1;
+            height: 500px;
+            background: radial-gradient(circle, #1a1a1a 0%, #0a0a0a 70%);
+            border-radius: 20px;
+            position: relative;
+            border: 1px solid #222;
+        }
+
+        model-viewer {
+            width: 100%;
+            height: 100%;
+            --poster-color: transparent;
+        }
+
+        /* ریسپانسیو برای موبایل */
+        @document {
+            body[dir="ltr"] .hero {
+                flex-direction: row;
+            }
+        }
+        
+        @media (max-width: 968px) {
+            .hero {
+                flex-direction: column-reverse !important;
+                text-align: center;
+                padding-top: 120px;
+            }
+            .viewer-container {
+                width: 100%;
+                height: 350px;
+            }
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo" id="site-logo">Samazarinn</div>
+        <div class="nav-tools">
+            <button class="lang-btn" onclick="toggleLanguage()" id="lang-toggle">EN</button>
+        </div>
+    </header>
+
+    <main class="hero">
+        <div class="hero-content">
+            <h1 id="main-title">جواهرات لوکس سمازرین</h1>
+            <p id="main-desc">تجربه‌ای بی‌نظیر از خرید آنلاین طلا و جواهرات با کیفیت استثنایی و طراحی‌های مدرن و ماندگار.</p>
+            <div class="price-tag" id="product-price">۱۸,۵۰۰,۰۰۰ تومان</div>
+            <a href="#" class="buy-btn" id="payment-link">خرید مستقیم</a>
+        </div>
+
+        <div class="viewer-container">
+            <model-viewer 
+                id="threed-viewer"
+                src="https://modelviewer.dev/shared-assets/models/Astronaut.glb" 
+                alt="Samazarinn 3D Gold"
+                auto-rotate 
+                camera-controls 
+                shadow-intensity="1" 
+                exposure="1.2">
+            </model-viewer>
+        </div>
+    </main>
+
+    <script>
+        // دیتای مرکزی سایت (این بخش کاملاً قابل ادیت از پنل خواهد بود)
+        let siteData = {
+            currentLang: "fa",
+            reymitUrl: "https://reymit.ir/samazarinn", // لینک پرداخت اختصاصی شما
+            fa: {
+                logo: "سمازرین",
+                title: "کالکشن طلا و جواهرات سمازرین",
+                desc: "طراحی‌های خاص و منحصربه‌فرد برای کسانی که به درخشش خود اهمیت می‌دهند. مدل سه‌بعدی فوق را بچرخانید و جزئیات را بررسی کنید.",
+                price: "۴۵,۰۰۰,۰۰۰ تومان",
+                btnText: "خرید مستقیم و آنلاین",
+                threedModel: "https://modelviewer.dev/shared-assets/models/Astronaut.glb" // آدرس مدل 3D طلا
+            },
+            en: {
+                logo: "Samazarinn",
+                title: "Samazarinn Luxury Jewelry",
+                desc: "Exclusive and unique designs for those who value their brilliance. Rotate the 3D model above and inspect the details.",
+                price: "$1,250",
+                btnText: "Buy Directly Now",
+                threedModel: "https://modelviewer.dev/shared-assets/models/Astronaut.glb" // آدرس مدل 3D انگلیسی یا یکسان
+            }
+        };
+
+        // تابع اعمال تغییرات دیتابیس روی ظاهر سایت
+        function renderSite() {
+            const lang = siteData.currentLang;
+            const content = siteData[lang];
+
+            // تغییر جهت صفحه بر اساس زبان
+            if (lang === "fa") {
+                document.documentElement.dir = "rtl";
+                document.documentElement.lang = "fa";
+                document.getElementById("lang-toggle").innerText = "EN";
+            } else {
+                document.documentElement.dir = "ltr";
+                document.documentElement.lang = "en";
+                document.getElementById("lang-toggle").innerText = "FA";
+            }
+
+            // تزریق متون داینامیک
+            document.getElementById("site-logo").innerText = content.logo;
+            document.getElementById("main-title").innerText = content.title;
+            document.getElementById("main-desc").innerText = content.desc;
+            document.getElementById("product-price").innerText = content.price;
+            document.getElementById("payment-link").innerText = content.btnText;
+            document.getElementById("payment-link").href = siteData.reymitUrl;
+            
+            // به‌روزرسانی مدل سه‌بعدی
+            document.getElementById("threed-viewer").src = content.threedModel;
+        }
+
+        // تابع سوییچ زبان
+        function toggleLanguage() {
+            siteData.currentLang = siteData.currentLang === "fa" ? "en" : "fa";
+            renderSite();
+        }
+
+        // اجرای اولیه سایت
+        window.onload = renderSite;
+    </script>
+</body>
+</html>
